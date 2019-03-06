@@ -47,7 +47,12 @@
     #define PyString_AsString PyUnicode_AsUTF8
     #define PyString_Check PyUnicode_Check
     #define PyString_Size PyUnicode_GET_SIZE
+#else
+    #define PyBytes_Check PyString_Check
+    #define PyBytes_AsString PyString_AsString
+    #define PyBytes_Size PyString_Size
 #endif
+
 
 static PyObject *getattr_cb=NULL, *readlink_cb=NULL, *readdir_cb=NULL,
   *mknod_cb=NULL, *mkdir_cb=NULL, *unlink_cb=NULL, *rmdir_cb=NULL,
@@ -517,11 +522,11 @@ read_func(const char *path, char *buf, size_t s, off_t off)
 	PROLOGUE( PYO_CALLWITHFI(fi, read_cb, snK, path, s, off) )
 #endif
 
-	if(PyString_Check(v)) {
-		if(PyString_Size(v) > s)
+	if(PyBytes_Check(v)) {
+		if(PyBytes_Size(v) > s)
 			goto OUT_DECREF;
-		memcpy(buf, PyString_AsString(v), PyString_Size(v));
-		ret = PyString_Size(v);
+		memcpy(buf, PyBytes_AsString(v), PyBytes_Size(v));
+		ret = PyBytes_Size(v);
 	}
 
 	EPILOGUE
